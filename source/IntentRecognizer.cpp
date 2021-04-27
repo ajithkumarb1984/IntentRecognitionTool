@@ -19,11 +19,11 @@ IntentRecognizer::~IntentRecognizer()
 }
 
 /*
- * Find Case Insensitive Sub String in a given substring
+ * Function to Find Case Insensitive Sub String in a given substring
  */
 size_t IntentRecognizer::findCaseInsensitive(std::string data, std::string toSearch, size_t pos = 0)
 {
-	// Convert complete given String to lower case
+    // Convert complete given String to lower case
     std::transform(data.begin(), data.end(), data.begin(), ::tolower);
     // Convert complete given Sub String to lower case
     std::transform(toSearch.begin(), toSearch.end(), toSearch.begin(), ::tolower);
@@ -42,36 +42,35 @@ string IntentRecognizer::GetIntent(const int i_countWords, char** i_words)
 string IntentRecognizer::GetIntent(const string i_sentence)
 {
     /*clear member variables before running Intent checks*/
-	string outputIntent("");
+    string outputIntent("");
     m_Weather.clear();
     m_Fact.clear();
     m_Time.clear();
     m_Date.clear();
     m_Place.clear();
-	/*Starting sub-routine for weather and Fact intent checks*/
+	
+  /*Starting sub-routine for weather and Fact intent checks*/
 	findWeatherIntent(i_sentence);
 	findFactIntent(i_sentence);
 	
     /* determine weather intent*/
 	
-		if(m_Weather != "")
+	if(m_Weather != "")
+	{
+		outputIntent.append("Intent: Get Weather");
+		if(m_Place != "")
 		{
-			outputIntent.append("Intent: Get Weather");
-			
-			if(m_Place != "")
-			{
-				outputIntent.append(" City");
+			outputIntent.append(" City");
 				
-					if((m_Time != "") || (m_Date != ""))
-					{
-					outputIntent.append(" Time");
-					}
+			if((m_Time != "") || (m_Date != ""))
+			{
+				outputIntent.append(" Time");
 			}
 		}
-		
-		 /* determine Fact intent*/
-		 
-		else if(m_Fact != "")
+	}
+  
+	/* determine Fact intent*/
+	else if(m_Fact != "")
 		{
 			outputIntent.append("Intent: Get Fact");
 		}
@@ -88,7 +87,8 @@ string IntentRecognizer::GetIntent(const string i_sentence)
 
 		return outputIntent;
 }
-/*return input console args as string to work on */
+
+/*Function that return input console args as string to work on */
 string IntentRecognizer::Convert2DCharArrayToString(const int i_count, char** i_array)
 {
     /* Convert char** to string */
@@ -101,13 +101,15 @@ string IntentRecognizer::Convert2DCharArrayToString(const int i_count, char** i_
 	}
     return sentence;
 }
-/* FindWeatherIntent sub-rotine*/
+
+/* FindWeatherIntent sub-rotine function*/
 void IntentRecognizer::findWeatherIntent(const string i_sentence)
 {
     std::string word,word1,word2;
-	ifstream inFile,inFile1,inFile2;
+	  ifstream inFile,inFile1,inFile2;
     inFile.open("../model/weather.txt",ios::in);
-	//compare every keywords with phrase
+	
+	  //compare every keywords with phrase
     while (inFile>>word)
         {
                 size_t pos = findCaseInsensitive(i_sentence, word);
@@ -118,42 +120,44 @@ void IntentRecognizer::findWeatherIntent(const string i_sentence)
 		}
 		
 	inFile1.open("../model/place.txt",ios::in);
+	
 	//compare every keywords with phrase
 	 while (inFile1>> word1)
-        {
+   {
                 size_t pos = findCaseInsensitive(i_sentence, word1);
                 if( pos != std::string::npos)
                  {
                     m_Place = word1;
-				 }
+				         }
 		}
                     
 	//compare every keywords with phrase
-    inFile2.open("../model/time.txt",ios::in);
+   inFile2.open("../model/time.txt",ios::in);
 	 while (inFile2>>word2)
-        {
+   {
                 size_t pos = findCaseInsensitive(i_sentence, word2);
                 if( pos != std::string::npos)
                  {
                     m_Time = word2;
-				 }
+				 				}
 		}		
 		
 	findCalendarIntent(i_sentence);				                   
              
     // not closing streams can cause memory leaks
     inFile.close();
-	inFile1.close();
-	inFile2.close();
+	  inFile1.close();
+	  inFile2.close();
 
 }
 
+/* FindCalendarIntent sub-rotine function*/
 void IntentRecognizer::findCalendarIntent(const string i_sentence)
 {
 	std::smatch searchedResult;
-    std::regex searchTarget;
+  std::regex searchTarget;
 
-   /* TIME */
+   /* TIME regex*/
      searchTarget = std::regex("([0-9][.|:][0-5][0-9]"
                         "|[0-9][.|:][0-5][0-9][ |][a|A][m|M]"
                         "|[0-9][.|:][0-5][0-9][ |][p|P][m|M]"
@@ -165,25 +169,26 @@ void IntentRecognizer::findCalendarIntent(const string i_sentence)
                         "|[2][0-3][.|:][0-5][0-9][ |][p|P][m|M])");
 						
 	if(std::regex_search(i_sentence, searchedResult, searchTarget))
-    {
+  {
 		m_Date = string(searchedResult[0]);
-    }
+  }
 }
 
+/* findFactIntent sub-rotine function*/
 void IntentRecognizer::findFactIntent(const string i_sentence)
 {
     std::string word;
-	ifstream inFile3;
+	  ifstream inFile3;
     inFile3.open("../model/fact.txt",ios::in);
 	   
     while (inFile3>>word)
-        {
+     {
 				//comparing input sentence against fact keywords
 			    size_t pos = findCaseInsensitive(i_sentence, word);
                 if( pos != std::string::npos)
                  {
                     m_Fact = word;
-				 }
+		 						 }
 		}
 		inFile3.close();
 }
