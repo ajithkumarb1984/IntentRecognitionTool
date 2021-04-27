@@ -1,5 +1,5 @@
 # IntentRecognitionTool
-A simple small intent recognition command line tool
+A simple intent recognition command line tool
 
 
 # Description
