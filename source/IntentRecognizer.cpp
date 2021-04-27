@@ -62,10 +62,11 @@ string IntentRecognizer::GetIntent(const string i_sentence)
 		{
 			outputIntent.append(" City");
 				
-			if((m_Time != "") || (m_Date != ""))
-			{
-				outputIntent.append(" Time");
-			}
+			
+		}
+		if((m_Time != "") || (m_Date != ""))
+		{
+			outputIntent.append(" Time");
 		}
 	}
   
